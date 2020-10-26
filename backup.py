@@ -9,7 +9,7 @@ from search import Problem, Node, astar_search, breadth_first_tree_search, \
     depth_first_tree_search, greedy_search
 import sys
 
-#TODO meter elifes nas funcoes onde eu quero que so se leia 1 if
+
 class RRState:
     state_id = 0
 
@@ -37,20 +37,6 @@ class Board:
         self.target = target
         self.wall_num = wall_num
         self.walls = walls
-
-
-    def get_initial_robot(self, string):
-        starting_color = self.get_robot_color(string)
-        #print(starting_color)
-        #print()
-        if self.get_robot_color(self.r1) == starting_color:
-            return self.r1
-        elif self.get_robot_color(self.r2) == starting_color:
-            return self.r2
-        elif self.get_robot_color(self.r3) == starting_color:
-            return self.r3
-        elif self.get_robot_color(self.r4) == starting_color:
-            return self.r4
 
     def get_robot_color(self, string):
         color = string[0]
@@ -155,35 +141,24 @@ def parse_instance(filename: str) -> Board:
 class RicochetRobots(Problem):
     def __init__(self, board: Board):
         """ O construtor especifica o estado inicial. """
+        # TODO: self.initial = ...
         self.initial = board
         
     def boundary_collision(self,pos, size, a_array, color):
         if pos[0] == 1:
             a_array.remove((color, 'u'))
-        elif pos[0] == size:
+        if pos[0] == size:
             a_array.remove((color, 'd'))
-        elif pos[1] == 1:
+        if pos[1] == 1:
             a_array.remove((color, 'l'))
-        elif pos[1] == size:
+        if pos[1] == size:
             a_array.remove((color, 'r'))
 
     def wall_collision(self, wall_pos_lst, pos, walls, color, a_array):
         d = ' '
-        j = 0
         for i in range(len(wall_pos_lst)):
             if wall_pos_lst[i] == pos:
-                
                 d = self.initial.get_wall_direction(walls[i])
-    
-            if d == 'l':
-                a_array.remove((color, 'l'))
-            if d == 'r':
-                a_array.remove((color, 'r'))
-            if d == 'u':
-                a_array.remove((color, 'u'))
-            if d == 'd':
-                a_array.remove((color, 'd'))
-
             if wall_pos_lst[i] == self.move_1_square(pos,'r'):
                 if self.initial.get_wall_direction(walls[i]) == 'l':
                     a_array.remove((color, 'r'))
@@ -196,28 +171,26 @@ class RicochetRobots(Problem):
             if wall_pos_lst[i] == self.move_1_square(pos,'d'):
                 if self.initial.get_wall_direction(walls[i]) == 'u':
                     a_array.remove((color, 'd')) 
-        print("JOAT-->",j)
-        
+                
+        if d == 'l':
+            a_array.remove((color, 'l'))
+        if d == 'r':
+            a_array.remove((color, 'r'))
+        if d == 'u':
+            a_array.remove((color, 'u'))
+        if d == 'd':
+            a_array.remove((color, 'd'))
 
     def robot_collisions(self, robot_pos_lst, pos, color, a_array):
-        left = (color, 'l')
-        right = (color, 'r')
-        up = (color, 'u')
-        down = (color, 'd')
-
         for i in range(len(robot_pos_lst)):
             if robot_pos_lst[i] == self.move_1_square(pos,'l'):
-                if left in a_array:
-                    a_array.remove(left)
+                a_array.remove((color, 'l'))
             if robot_pos_lst[i] == self.move_1_square(pos,'r'):
-                if right in a_array:
-                    a_array.remove(right)
+                a_array.remove((color, 'r'))
             if robot_pos_lst[i] == self.move_1_square(pos,'u'):
-                if up in a_array:
-                    a_array.remove(up)
+                a_array.remove((color, 'u'))
             if robot_pos_lst[i] == self.move_1_square(pos,'d'):
-                if down in a_array:    
-                    a_array.remove(down)
+                a_array.remove((color, 'd'))
 
     def move_1_square(self, pos, direction):
         new_move = ( )
@@ -238,6 +211,7 @@ class RicochetRobots(Problem):
         return new_move
      
     def boundary(self, l, size, rd):
+        print("----limit function----")
         #esquerda
         if rd == 'l':
             if (l[1] == 0):
@@ -281,140 +255,101 @@ class RicochetRobots(Problem):
         return new_move
     
 
-    def robot_bump(self, l, robot_pos_list, rob_direction):
-        isRobot = 0
+    def moves_against_robot(self, l, robot_pos_list, rob_direction):
+        print("----robot function----")
         tup_input = tuple(l)
-        l_tup = (tup_input[0], tup_input[1]-1)
-        r_tup = (tup_input[0], tup_input[1]+1)
-        u_tup = (tup_input[0]-1, tup_input[1])
-        d_tup = (tup_input[0]+1, tup_input[1])
+        #print("tive aqui")
+        if tup_input in robot_pos_list:
+            if rob_direction == 'l':
+                l[1] = l[1]+1
+                new_move = l
+            if rob_direction == 'r':
+                l[1] = l[1]-1
+                new_move = l
+            if rob_direction == 'u':
+                l[0] = l[0]+1
+                new_move = l
+            if rob_direction == 'd':
+                l[0] = l[0]-1
+                new_move = l
+        else:
+            new_move = l
 
-        if rob_direction == 'l':
-            if l_tup in robot_pos_list:
-                isRobot = 1
-        if rob_direction == 'r':
-            if r_tup in robot_pos_list:
-                isRobot = 1
-        if rob_direction == 'u':
-            if u_tup in robot_pos_list:
-                isRobot = 1
- 
-        if rob_direction == 'd':
-            if d_tup in robot_pos_list:
-                isRobot = 1
-        if isRobot == 1:
-            return True
-        return False
-        
-    def wall_bump(self, l, wall_pos_list, rob_direction, walls):
-        isWall = 0
+        return new_move
+    
+    def moves_against_wall(self, l, wall_pos_list, rob_direction, walls):
+        print("----wall function----")
         wall_direction = ' '
         tup_input = tuple(l)
-        l_tup = (tup_input[0], tup_input[1]-1)
-        r_tup = (tup_input[0], tup_input[1]+1)
-        u_tup = (tup_input[0]-1, tup_input[1])
-        d_tup = (tup_input[0]+1, tup_input[1])
-        
         for i in range(len(wall_pos_list)):
             if wall_pos_list[i] == tup_input:
                 wall_direction = self.initial.get_wall_direction(walls[i])
-            if wall_pos_list[i] == l_tup:
-                wall_direction = self.initial.get_wall_direction(walls[i])
-            if wall_pos_list[i] == r_tup:
-                wall_direction = self.initial.get_wall_direction(walls[i])
-            if wall_pos_list[i] == u_tup:
-                wall_direction = self.initial.get_wall_direction(walls[i])
-            if wall_pos_list[i] == d_tup:
-                wall_direction = self.initial.get_wall_direction(walls[i])
-    
-        if rob_direction == 'l':
-            if tup_input in wall_pos_list:
-                if wall_direction == 'l':
-                    isWall = 1
-                else:
-                    isWall = 0
-            
-            if l_tup in wall_pos_list:
-                if wall_direction == 'r':
-                    isWall = 1 
-                else:
-                    isWall = 0
-        if rob_direction == 'r':
-            if tup_input in wall_pos_list:
-                if wall_direction == 'r':
-                    isWall = 1
-                else:
-                    isWall = 0
-
-            if r_tup in wall_pos_list:
-                if wall_direction == 'l':
-                    isWall = 1 
-                else:
-                    isWall = 0
-        if rob_direction == 'u':
-            if tup_input in wall_pos_list:
-                if wall_direction == 'u':
-                    isWall = 1
-                else:
-                    isWall = 0
-            if u_tup in wall_pos_list:
-                if wall_direction == 'd':
-                    isWall = 1 
-                else:
-                    isWall = 0
-        if rob_direction == 'd':
-            if tup_input in wall_pos_list:
-                if wall_direction == 'd':
-                    isWall = 1
-                else:
-                    isWall = 0
-            if d_tup in wall_pos_list:
-                if wall_direction == 'u':
-                    isWall = 1 
-                else:
-                    isWall = 0
-        if isWall == 1:
-            l = l
-            return True
         
-        return False
+        if tup_input in wall_pos_list:
+            if wall_direction == 'l':
+                if rob_direction == 'r':
+                    l[1] = l[1] - 1
+                    new_move = l
+                else:
+                    new_move = l
+            if wall_direction == 'r':
+                if rob_direction == 'l':
+                    #print("current pos--->",l)
+                    l[1] = l[1] + 1
+                    #print("current pos--->",l)
+                    new_move = l
+                else:
+                    new_move = l
+            if wall_direction == 'u':
+                if rob_direction == 'd':
+                    l[0] = l[0]-1
+                    new_move = l
+                else:
+                    new_move = l
+            if wall_direction == 'd':
+                if rob_direction == 'u':
+                    l[0] = l[0]+1
+                    new_move = l
+                else:
+                    new_move = l
+        else:
+            new_move = l
+        
+        return new_move
+        
 
     def final_movement(self, size, l, wall_pos_list, robot_pos_list, rob_direction, walls):
-        l_aux = l 
-
+        #TODO ta mal feitooooo
+        l_aux = l
         for _ in range(0, size-1):
-            if self.wall_bump(l_aux, wall_pos_list, rob_direction, walls) == False:
-                if self.robot_bump(l_aux, robot_pos_list, rob_direction) == False:
-                    if rob_direction == 'l':
-                        l_aux[1] = l_aux[1]-1 
-                        if self.boundary(l_aux, size, rob_direction) == l_aux:
-                            l = l_aux
+            if rob_direction == 'l':
+                l_aux[1] = l_aux[1]-1
+            if rob_direction == 'r':
+                l_aux[1] = l_aux[1]+1
+            if rob_direction == 'u':
+                l_aux[0] = l_aux[0]-1
+            if rob_direction == 'd':
+                l_aux[0] = l_aux[0]+1
+            
+            if self.moves_against_wall(l_aux, wall_pos_list, rob_direction, walls) == l_aux:
+                print("current pos----->", l_aux)
+                if self.moves_against_robot(l_aux, robot_pos_list, rob_direction) == l_aux: 
+                    print("current pos----->", l_aux)
+                    if self.boundary(l_aux, size, rob_direction) == l_aux:
+                        print("current pos----->", l_aux)
+                        l = l_aux
+                    else:
+                        l = self.boundary(l, size, rob_direction)
 
-                        else:
-                            l = self.boundary(l_aux, size, rob_direction)
-
-                    if rob_direction == 'r':
-                        l_aux[1] = l_aux[1]+1 
-                        if self.boundary(l_aux, size, rob_direction) == l_aux:
-                            l = l_aux
-                        else:
-                            l = self.boundary(l_aux, size, rob_direction)
-                    if rob_direction == 'u':
-                        l_aux[0] = l_aux[0]-1 
-                        if self.boundary(l_aux, size, rob_direction) == l_aux:
-                            l = l_aux
-                        else:
-                            l = self.boundary(l_aux, size, rob_direction)
-                    if rob_direction == 'd':
-                        l_aux[0] = l_aux[0]+1 
-                        if self.boundary(l_aux, size, rob_direction) == l_aux:
-                            l = l_aux
-                        else:
-                            l = self.boundary(l_aux, size, rob_direction)
                 else:
-                    l = l_aux
+                    l = self.moves_against_robot(l_aux, robot_pos_list, rob_direction)
+                    
             else:
-                l = l_aux
+                l = self.moves_against_wall(l_aux, wall_pos_list, rob_direction, walls)
+                
+        
+                
+        
 
     def move_robot(self, pos, rob_direction, wall_pos_list, walls, size, robot_pos_list):
         res_tup = ( )
@@ -434,7 +369,6 @@ class RicochetRobots(Problem):
         return res_tup
         
     
-    
     def actions(self, state: RRState):
         """ Retorna uma lista de ações que podem ser executadas a
         partir do estado passado como argumento. """
@@ -452,25 +386,21 @@ class RicochetRobots(Problem):
         robot_pos_lst = [y_pos, g_pos, b_pos, r_pos]
 
         #-------yellow robot----------
-        
+        self.boundary_collision(y_pos, size, actions, 'Y')
         self.wall_collision(wall_pos_lst, y_pos, walls, 'Y', actions)
         self.robot_collisions(robot_pos_lst, y_pos, 'Y', actions)
-        self.boundary_collision(y_pos, size, actions, 'Y')
          #-------green robot----------
-        
+        self.boundary_collision(g_pos, size, actions, 'G')
         self.wall_collision(wall_pos_lst, g_pos, walls, 'G', actions)
         self.robot_collisions(robot_pos_lst, g_pos, 'G', actions)
-        self.boundary_collision(g_pos, size, actions, 'G')
         #-------blue robot---------
-        
+        self.boundary_collision(b_pos, size, actions, 'B')
         self.wall_collision(wall_pos_lst, b_pos, walls, 'B', actions)
         self.robot_collisions(robot_pos_lst, b_pos, 'B', actions)
-        self.boundary_collision(b_pos, size, actions, 'B')
         #-------red robot----------
-       
+        self.boundary_collision(r_pos, size, actions, 'R')
         self.wall_collision(wall_pos_lst, r_pos, walls, 'R', actions)
         self.robot_collisions(robot_pos_lst, r_pos, 'R', actions)
-        self.boundary_collision(r_pos, size, actions, 'R')
 
         
         return actions
@@ -565,7 +495,6 @@ class RicochetRobots(Problem):
                 r_pos = self.move_robot(r_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(r_pos[0]) + ' ' + str(r_pos[1])
                 state.board.r4 = state_change_string
-                
         
         
         
@@ -576,35 +505,13 @@ class RicochetRobots(Problem):
         um estado objetivo. Deve verificar se o alvo e o robô da
         mesma cor ocupam a mesma célula no tabuleiro. """
         # TODO
-        target = state.board.target
-        color = state.board.get_robot_color(target)
-
-        if color == 'Y':
-            return state.board.robot_position('Y') == state.board.string_to_robot_coord(target)
-                
-        if color == 'G':
-            return state.board.robot_position('G') == state.board.string_to_robot_coord(target)
-        
-        if color == 'B':
-            return state.board.robot_position('B') == state.board.string_to_robot_coord(target)
-        
-        if color == 'R':
-            return state.board.robot_position('R') == state.board.string_to_robot_coord(target)
-                 
-
-        return False
+        pass
 
     def h(self, node: Node):
         """ Função heuristica utilizada para a procura A*. """
         # TODO
-        goal = self.initial.string_to_robot_coord(node.state.board.target)#devolve as coordenadas do target
-        
-        start_robot = self.initial.string_to_robot_coord(self.initial.get_initial_robot(node.state.board.target))
+        pass
 
-        x1, y1 = start_robot
-        x2, y2 = goal 
-        return abs(x2 - x1) + abs(y2 - y1) 
-      
 
 if __name__ == "__main__":
     # TODO:
@@ -616,27 +523,36 @@ if __name__ == "__main__":
 
 
 '''
-# Ler tabuleiro do ficheiro "i1.txt":
-board = parse_instance("instances/i1.txt")
-problem = RicochetRobots(board)
-s0 = RRState(board)
-print(problem.actions(s0))
-# Aplicar as ações que resolvem a instância
-#print(('B', 'l') in problem.actions(s0))
-s1 = problem.result(s0, ('B', 'l'))
-print(problem.actions(s1))
-#print(('Y', 'u') in problem.actions(s1))
-s2 = problem.result(s1, ('Y', 'u'))
-print(problem.actions(s2))
-#print(('R', 'r') in problem.actions(s2))
-s3 = problem.result(s2, ('R', 'r'))
-print(problem.actions(s3))
-#print(('R', 'u') in problem.actions(s3))
-s4 = problem.result(s3, ('R', 'u'))
-print(problem.actions(s4))
+#Exemplo 1:
+print("----------EXEMPLO 1---------:")
+# Ler tabuleiro do ficheiro i1.txt:
+board = parse_instance(sys.argv[1])
+# Imprimir as posições dos robôs:
+print(board.robot_position('R'))
+print(board.robot_position('G'))
+print(board.robot_position('B'))
+print(board.robot_position('Y'))
+
+
 '''
-
-board = parse_instance("instances/i11.txt")
+#Exemplo 2:
+print("----------EXEMPLO2---------:\n")
+# Ler tabuleiro do ficheiro 'i1.txt':
+board = parse_instance(sys.argv[1])
+# Criar uma instância de RicochetRobots:
 problem = RicochetRobots(board)
+# Criar um estado com a configuração inicial:
+initial_state = RRState(board)
+# Mover o robô azul para a esquerda:
+print(problem.actions(initial_state))
+print("YELLOW-->", board.robot_position('Y'))
+result_state = problem.result(initial_state, ('Y', 'l'))
 
-problem.print_list()
+
+# Imprimir a posição do robô azul:
+print(result_state.board.robot_position('Y'))
+
+print("RED--->",board.robot_position('R'))
+print("GREEN--->",board.robot_position('G'))
+print("BLUE--->",board.robot_position('B'))
+print("YELLOW-->", board.robot_position('Y'))
