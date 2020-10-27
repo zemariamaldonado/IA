@@ -291,17 +291,7 @@ y = final_movement(size, [1,4], wall_pos_list, robot_pos_list, 'd', walls)
 print("----final move----")
 print(y)
 #tup = move_robot((4,4), 'l', wall_pos_list, walls, size, robot_pos_list)
-'''
-
-#new = move_robot((2,2), 'u', wall_pos_list, walls, size,  robot_pos_list)
-#move_robot((4,4), 'l', wall_pos_list, walls, size,  robot_pos_list)
-#moves_against_wall([4,4], wall_pos_list, 'l')
-
-actions = [('Y','l'), ('Y','r'), ('Y','u'), ('Y','d'), ('G','l'), ('G','r'), ('G','u'), ('G','d'), ('B','l'), ('B','r'), ('B','u'), ('B','d'), ('R','l'), ('R','r'), ('R','u'), ('R','d')]
-walls = ['1 1 d', '1 3 d', '1 4 d', '1 7 d', '2 2 d', '2 5 d', '2 7 d', '3 1 d', '3 2 d', '3 5 d', '3 6 d', '4 3 d', '4 5 d', '5 3 d', '5 4 d', '5 5 d', '5 6 d', '5 7 d', '6 3 d', '6 7 d', '1 1 r', '1 2 r', '1 5 r', '1 6 r', '2 1 r', '2 2 r', '2 3 r', '2 5 r', '3 2 r', '3 4 r', '3 6 r', '4 5 r', '5 1 r', '5 2 r', '5 4 r', '5 6 r', '6 1 r', '6 5 r', '7 2 r', '7 3 r', '7 6 r']
-
-def wall_collision(wall_pos_lst, pos, walls, color, a_array):
-        d = ' '
+ d = ' '
         j = 0
         for i in range(len(wall_pos_lst)):
             if wall_pos_lst[i] == pos:
@@ -330,4 +320,96 @@ def wall_collision(wall_pos_lst, pos, walls, color, a_array):
                 if get_wall_direction(walls[i]) == 'u':
                     a_array.remove((color, 'd')) 
         print("JOAT-->",j)
-        
+'''
+
+#new = move_robot((2,2), 'u', wall_pos_list, walls, size,  robot_pos_list)
+#move_robot((4,4), 'l', wall_pos_list, walls, size,  robot_pos_list)
+#moves_against_wall([4,4], wall_pos_list, 'l')
+
+actions = [('Y','l'), ('Y','r'), ('Y','u'), ('Y','d'), ('G','l'), ('G','r'), ('G','u'), ('G','d'), ('B','l'), ('B','r'), ('B','u'), ('B','d'), ('R','l'), ('R','r'), ('R','u'), ('R','d')]
+walls = ['1 1 d', '1 3 d', '1 4 d', '1 7 d', '2 2 d', '2 5 d', '2 7 d', '3 1 d', '3 2 d', '3 5 d', '3 6 d', '4 3 d', '4 5 d', '5 3 d', '5 4 d', '5 5 d', '5 6 d', '5 7 d', '6 3 d', '6 7 d', '1 1 r', '1 2 r', '1 5 r', '1 6 r', '2 1 r', '2 2 r', '2 3 r', '2 5 r', '3 2 r', '3 4 r', '3 6 r', '4 5 r', '5 1 r', '5 2 r', '5 4 r', '5 6 r', '6 1 r', '6 5 r', '7 2 r', '7 3 r', '7 6 r']
+wall_pos_list = wall_coordinate_list(walls)
+size = 7
+y_pos = (4,5)
+g_pos = (4,6)
+b_pos = (4,1)
+r_pos = (6,4)
+
+
+def test(pos):
+    lst = []
+    wall_pos_c = 0
+
+    for i in range(len(wall_pos_list)):
+        if y_pos == wall_pos_list[i]:
+            wall_pos_c+=1
+            lst.append(i)
+    
+    return lst
+
+
+def not_removed(color, direction, lst):
+    return (color,direction) in lst
+
+
+
+
+#def wall_collision(wall_pos_lst, pos, walls, color, actions):
+pos = y_pos
+l_tup = (pos[0], pos[1]-1)
+r_tup = (pos[0], pos[1]+1)
+u_tup = (pos[0]-1, pos[1])
+d_tup = (pos[0]+1, pos[1]) 
+curr_lst = []
+l_lst = []
+r_lst = []
+u_lst = []
+d_lst = []
+wall_direction = ''
+isWall = 0
+color = 'Y'
+for i in range(len(wall_pos_list)):
+    if wall_pos_list[i] == pos:
+        d = get_wall_direction(walls[i])
+        print(d)
+
+
+
+for i in range(len(wall_pos_list)):
+    if pos == wall_pos_list[i]:
+        curr_lst.append(i)
+        isWall = 1
+    if l_tup == wall_pos_list[i]:
+        l_lst.append(i)
+        isWall = -1 
+    if r_tup == wall_pos_list[i]:
+        r_lst.append(i)
+        isWall = -1 
+    if u_tup == wall_pos_list[i]:
+        u_lst.append(i)
+        isWall = -1 
+    if d_tup == wall_pos_list[i]:
+        d_lst.append(i)
+        isWall = -1 
+
+#verifica todas as paredes da posicao
+if isWall == 1:
+    for i in range(len(curr_lst)):
+        j = curr_lst[i]
+        wall_direction = get_wall_direction(walls[j])
+        if wall_direction == 'r':
+            if not_removed(color,'r',actions):
+                actions.remove((color, 'r'))
+        elif wall_direction == 'l':
+            if not_removed(color,'l',actions):
+                actions.remove((color, 'l'))
+        elif wall_direction == 'u':
+            if not_removed(color,'u',actions):
+                actions.remove((color, 'u'))
+        elif wall_direction == 'd':
+            if not_removed(color,'d',actions):
+                actions.remove((color, 'd'))
+
+#if isWall == -1:
+    
+print(wall_pos_list)

@@ -10,6 +10,8 @@ from search import Problem, Node, astar_search, breadth_first_tree_search, \
 import sys
 
 #TODO meter elifes nas funcoes onde eu quero que so se leia 1 if
+#TODO apagar prints em comentarios
+
 class RRState:
     state_id = 0
 
@@ -108,18 +110,10 @@ class Board:
     def robot_position(self, robot: str):
         """ Devolve a posição atual do robô passado como argumento. """
         # TODO
-        if robot == 'Y':
+        if robot == 'Y' or robot == 'G' or robot == 'B' or robot == 'R':
             res = self.aux_pos(robot)
             return res
-        if robot == 'G':
-            res = self.aux_pos(robot)
-            return res
-        if robot == 'B':
-            res = self.aux_pos(robot)
-            return res
-        if robot == 'R':
-            res = self.aux_pos(robot)
-            return res
+
     
 def parse_instance(filename: str) -> Board:
     """ Lê o ficheiro cujo caminho é passado como argumento e retorna
@@ -169,34 +163,45 @@ class RicochetRobots(Problem):
 
     def wall_collision(self, wall_pos_lst, pos, walls, color, a_array):
         d = ' '
-        j = 0
+        left = (color, 'l')
+        right = (color, 'r')
+        up = (color, 'u')
+        down = (color, 'd')
         for i in range(len(wall_pos_lst)):
             if wall_pos_lst[i] == pos:
-                
                 d = self.initial.get_wall_direction(walls[i])
-    
+                
             if d == 'l':
-                a_array.remove((color, 'l'))
-            if d == 'r':
-                a_array.remove((color, 'r'))
-            if d == 'u':
-                a_array.remove((color, 'u'))
-            if d == 'd':
-                a_array.remove((color, 'd'))
-
-            if wall_pos_lst[i] == self.move_1_square(pos,'r'):
-                if self.initial.get_wall_direction(walls[i]) == 'l':
-                    a_array.remove((color, 'r'))
-            if wall_pos_lst[i] == self.move_1_square(pos,'l'):
-                if self.initial.get_wall_direction(walls[i]) == 'r':
-                    a_array.remove((color, 'l'))
-            if wall_pos_lst[i] == self.move_1_square(pos,'u'):
-                if self.initial.get_wall_direction(walls[i]) == 'd':
-                    a_array.remove((color, 'u'))
-            if wall_pos_lst[i] == self.move_1_square(pos,'d'):
-                if self.initial.get_wall_direction(walls[i]) == 'u':
-                    a_array.remove((color, 'd')) 
-        print("JOAT-->",j)
+                if left in a_array:
+                    a_array.remove(left)
+            elif d == 'r':
+                if right in a_array:
+                    a_array.remove(right)
+            elif d == 'u':
+                if up in a_array:
+                    a_array.remove(up)
+            elif d == 'd':
+                if down in a_array:
+                    a_array.remove(down)
+        
+        for j in range(len(wall_pos_lst)):
+            if wall_pos_lst[j] == self.move_1_square(pos,'r'):
+                if self.initial.get_wall_direction(walls[j]) == 'l':
+                    if right in a_array:
+                        a_array.remove(right)
+            if wall_pos_lst[j] == self.move_1_square(pos,'l'):
+                if self.initial.get_wall_direction(walls[j]) == 'r':
+                    if left in a_array:
+                        a_array.remove(left)
+            if wall_pos_lst[j] == self.move_1_square(pos,'u'):
+                if self.initial.get_wall_direction(walls[j]) == 'd':
+                    if up in a_array:
+                        a_array.remove(up)
+            if wall_pos_lst[j] == self.move_1_square(pos,'d'):
+                if self.initial.get_wall_direction(walls[j]) == 'u':
+                    if down in a_array:
+                        a_array.remove(down) 
+        
         
 
     def robot_collisions(self, robot_pos_lst, pos, color, a_array):
@@ -314,65 +319,71 @@ class RicochetRobots(Problem):
         r_tup = (tup_input[0], tup_input[1]+1)
         u_tup = (tup_input[0]-1, tup_input[1])
         d_tup = (tup_input[0]+1, tup_input[1])
-        
+         
+         #TODO fix its ugly
         for i in range(len(wall_pos_list)):
             if wall_pos_list[i] == tup_input:
                 wall_direction = self.initial.get_wall_direction(walls[i])
-            if wall_pos_list[i] == l_tup:
+            elif wall_pos_list[i] == l_tup:
                 wall_direction = self.initial.get_wall_direction(walls[i])
-            if wall_pos_list[i] == r_tup:
+            elif wall_pos_list[i] == r_tup:
                 wall_direction = self.initial.get_wall_direction(walls[i])
-            if wall_pos_list[i] == u_tup:
+            elif wall_pos_list[i] == u_tup:
                 wall_direction = self.initial.get_wall_direction(walls[i])
-            if wall_pos_list[i] == d_tup:
+            elif wall_pos_list[i] == d_tup:
                 wall_direction = self.initial.get_wall_direction(walls[i])
-    
-        if rob_direction == 'l':
-            if tup_input in wall_pos_list:
-                if wall_direction == 'l':
-                    isWall = 1
-                else:
-                    isWall = 0
             
-            if l_tup in wall_pos_list:
-                if wall_direction == 'r':
-                    isWall = 1 
-                else:
-                    isWall = 0
-        if rob_direction == 'r':
-            if tup_input in wall_pos_list:
-                if wall_direction == 'r':
-                    isWall = 1
-                else:
-                    isWall = 0
+            if rob_direction == 'l':
+                if tup_input == wall_pos_list[i]:
+                    if wall_direction == 'l':
+                        isWall = 1
+                    #else:
+                        #print("wallz")
+                        #isWall = 0
 
-            if r_tup in wall_pos_list:
-                if wall_direction == 'l':
-                    isWall = 1 
-                else:
-                    isWall = 0
-        if rob_direction == 'u':
-            if tup_input in wall_pos_list:
-                if wall_direction == 'u':
-                    isWall = 1
-                else:
-                    isWall = 0
-            if u_tup in wall_pos_list:
-                if wall_direction == 'd':
-                    isWall = 1 
-                else:
-                    isWall = 0
-        if rob_direction == 'd':
-            if tup_input in wall_pos_list:
-                if wall_direction == 'd':
-                    isWall = 1
-                else:
-                    isWall = 0
-            if d_tup in wall_pos_list:
-                if wall_direction == 'u':
-                    isWall = 1 
-                else:
-                    isWall = 0
+                if l_tup == wall_pos_list[i]:
+                    if wall_direction == 'r':
+                        #print("tresdoisparede")
+                        isWall = 1 
+                    #else:
+                        #isWall = 0
+            if rob_direction == 'r':
+                if tup_input == wall_pos_list[i]:
+                    #print("setedoisparede")
+                    if wall_direction == 'r':
+                        #print("setedoisparededirecao")
+                        isWall = 1
+                    #else:
+                        #isWall = 0
+
+                elif r_tup == wall_pos_list[i]:
+                    if wall_direction == 'l':
+                        isWall = 1 
+                    #else:
+                        #isWall = 0
+            if rob_direction == 'u':
+                if tup_input == wall_pos_list[i]:
+                    if wall_direction == 'u':
+                        isWall = 1
+                    #else:
+                        #isWall = 0
+                if u_tup == wall_pos_list[i]:
+                    if wall_direction == 'd':
+                        isWall = 1 
+                    #else:
+                        #isWall = 0
+            if rob_direction == 'd':
+                if tup_input == wall_pos_list[i]:
+                    if wall_direction == 'd':
+                        isWall = 1
+                    #else:
+                        #isWall = 0
+                if d_tup == wall_pos_list[i]:
+                    if wall_direction == 'u':
+                        isWall = 1 
+                    #else:
+                        #isWall = 0
+        #print(isWall)
         if isWall == 1:
             l = l
             return True
@@ -383,6 +394,9 @@ class RicochetRobots(Problem):
         l_aux = l 
 
         for _ in range(0, size-1):
+            #print("-->",l_aux)
+            #print(self.wall_bump(l_aux, wall_pos_list, rob_direction, walls))
+            
             if self.wall_bump(l_aux, wall_pos_list, rob_direction, walls) == False:
                 if self.robot_bump(l_aux, robot_pos_list, rob_direction) == False:
                     if rob_direction == 'l':
@@ -421,14 +435,8 @@ class RicochetRobots(Problem):
         l = list(pos)
 
         #l_to_tup = l 
-        if rob_direction == 'l':
+        if rob_direction == 'l' or rob_direction == 'r' or rob_direction == 'u' or rob_direction == 'd':
             self.final_movement(size, l, wall_pos_list, robot_pos_list, rob_direction, walls)
-        if rob_direction == 'r':
-            self.final_movement(size, l, wall_pos_list, robot_pos_list, rob_direction, walls) 
-        if rob_direction == 'u':
-            self.final_movement(size, l, wall_pos_list, robot_pos_list, rob_direction, walls)
-        if rob_direction == 'd':
-            self.final_movement(size, l, wall_pos_list, robot_pos_list, rob_direction, walls)  
 
         res_tup = tuple(l)
         return res_tup
@@ -495,88 +503,116 @@ class RicochetRobots(Problem):
         walls = state.board.walls
         wall_pos_list = state.board.wall_coordinate_list(walls)
         robot_pos_lst = [y_pos, g_pos, b_pos, r_pos]
-
+        
+        r_positions = -1
+        
         if color == 'Y':
             if state.board.get_robot_color(state.board.r1) == color:
                 y_pos = self.move_robot(y_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(y_pos[0]) + ' ' + str(y_pos[1])
-                state.board.r1 = state_change_string 
-            if state.board.get_robot_color(state.board.r2) == color:
+                r_positions = 1
+            elif state.board.get_robot_color(state.board.r2) == color:
                 y_pos = self.move_robot(y_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(y_pos[0]) + ' ' + str(y_pos[1])
-                state.board.r2 = state_change_string
-            if state.board.get_robot_color(state.board.r3) == color:
+                r_positions = 2
+            elif state.board.get_robot_color(state.board.r3) == color:
                 y_pos = self.move_robot(y_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(y_pos[0]) + ' ' + str(y_pos[1])
-                state.board.r3 = state_change_string
-            if state.board.get_robot_color(state.board.r4) == color:
+                r_positions = 3
+            elif state.board.get_robot_color(state.board.r4) == color:
                 y_pos = self.move_robot(y_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(y_pos[0]) + ' ' + str(y_pos[1])
-                state.board.r4 = state_change_string
-
+                r_positions = 4
         if color == 'G':
             if state.board.get_robot_color(state.board.r1) == color:
                 g_pos = self.move_robot(g_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(g_pos[0]) + ' ' + str(g_pos[1])
-                state.board.r1 = state_change_string 
-            if state.board.get_robot_color(state.board.r2) == color:
+                r_positions = 1
+            elif state.board.get_robot_color(state.board.r2) == color:
                 g_pos = self.move_robot(g_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(g_pos[0]) + ' ' + str(g_pos[1])
-                state.board.r2 = state_change_string
-            if state.board.get_robot_color(state.board.r3) == color:
+                r_positions = 2
+            elif state.board.get_robot_color(state.board.r3) == color:
                 g_pos = self.move_robot(g_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(g_pos[0]) + ' ' + str(g_pos[1])
-                state.board.r3 = state_change_string
-            if state.board.get_robot_color(state.board.r4) == color:
+                r_positions = 3
+            elif state.board.get_robot_color(state.board.r4) == color:
                 g_pos = self.move_robot(g_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(g_pos[0]) + ' ' + str(g_pos[1])
-                state.board.r4 = state_change_string
+                r_positions = 4
         if color == 'B':
             if state.board.get_robot_color(state.board.r1) == color:
                 b_pos = self.move_robot(b_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(b_pos[0]) + ' ' + str(b_pos[1])
-                state.board.r1 = state_change_string 
-            if state.board.get_robot_color(state.board.r2) == color:
+                r_positions = 1
+            elif state.board.get_robot_color(state.board.r2) == color:
                 b_pos = self.move_robot(b_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(b_pos[0]) + ' ' + str(b_pos[1])
-                state.board.r2 = state_change_string
-            if state.board.get_robot_color(state.board.r3) == color:
+                r_positions = 2
+            elif state.board.get_robot_color(state.board.r3) == color:
                 b_pos = self.move_robot(b_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(b_pos[0]) + ' ' + str(b_pos[1])
-                state.board.r3 = state_change_string
-            if state.board.get_robot_color(state.board.r4) == color:
+                r_positions = 3
+            elif state.board.get_robot_color(state.board.r4) == color:
                 b_pos = self.move_robot(b_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(b_pos[0]) + ' ' + str(b_pos[1])
-                state.board.r4 = state_change_string
+                r_positions = 4
         if color == 'R':
             if state.board.get_robot_color(state.board.r1) == color:
                 r_pos = self.move_robot(r_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(r_pos[0]) + ' ' + str(r_pos[1])
-                state.board.r1 = state_change_string 
-            if state.board.get_robot_color(state.board.r2) == color:
+                r_positions = 1
+            elif state.board.get_robot_color(state.board.r2) == color:
                 r_pos = self.move_robot(r_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(r_pos[0]) + ' ' + str(r_pos[1])
-                state.board.r2 = state_change_string
-            if state.board.get_robot_color(state.board.r3) == color:
+                r_positions = 2
+            elif state.board.get_robot_color(state.board.r3) == color:
                 r_pos = self.move_robot(r_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(r_pos[0]) + ' ' + str(r_pos[1])
-                state.board.r3 = state_change_string
-            if state.board.get_robot_color(state.board.r4) == color:
+                r_positions = 3
+            elif state.board.get_robot_color(state.board.r4) == color:
                 r_pos = self.move_robot(r_pos, direction, wall_pos_list, walls, size, robot_pos_lst)
                 state_change_string = color + ' ' + str(r_pos[0]) + ' ' + str(r_pos[1])
-                state.board.r4 = state_change_string
-                
+                r_positions = 4
+
+
+        r = [0,0,0,0]
+
+        if r_positions == 1 :
+            r[0] = state_change_string
+        elif r_positions == 2 :
+            r[1] = state_change_string
+        elif r_positions == 3:
+            r[2] = state_change_string
+        elif r_positions == 4 :
+            r[3] = state_change_string
         
-        
-        
-        return state
+
+        if r[0] != 0 :
+            board = Board(state.board.size, r[0] ,state.board.r2, state.board.r3 ,state.board.r4, state.board.target, state.board.wall_num, state.board.walls )
+        elif r[1] != 0 :
+            board = Board(state.board.size,state.board.r1 ,r[1], state.board.r3 ,state.board.r4, state.board.target, state.board.wall_num, state.board.walls )
+
+        elif r[2] != 0 :
+            board = Board(state.board.size, state.board.r1 ,state.board.r2, r[2] ,state.board.r4, state.board.target, state.board.wall_num, state.board.walls )
+
+        elif r[3] != 0 :
+            board = Board(state.board.size, state.board.r1 ,state.board.r2, state.board.r3 ,r[3], state.board.target, state.board.wall_num, state.board.walls )
+
+
+        new_state = RRState(board)
+
+
+        return new_state
 
     def goal_test(self, state: RRState):
         """ Retorna True se e só se o estado passado como argumento é
         um estado objetivo. Deve verificar se o alvo e o robô da
         mesma cor ocupam a mesma célula no tabuleiro. """
         # TODO
-        target = state.board.target
+        print(type(state.board.target))
+        target =state.board.target
+        
         color = state.board.get_robot_color(target)
 
         if color == 'Y':
@@ -597,9 +633,11 @@ class RicochetRobots(Problem):
     def h(self, node: Node):
         """ Função heuristica utilizada para a procura A*. """
         # TODO
-        goal = self.initial.string_to_robot_coord(node.state.board.target)#devolve as coordenadas do target
-        
-        start_robot = self.initial.string_to_robot_coord(self.initial.get_initial_robot(node.state.board.target))
+        new_state = node.state
+
+        goal = self.initial.string_to_robot_coord(new_state.target)#devolve as coordenadas do target
+
+        start_robot = self.initial.string_to_robot_coord(self.initial.get_initial_robot(new_state.target))
 
         x1, y1 = start_robot
         x2, y2 = goal 
@@ -636,7 +674,3 @@ s4 = problem.result(s3, ('R', 'u'))
 print(problem.actions(s4))
 '''
 
-board = parse_instance("instances/i11.txt")
-problem = RicochetRobots(board)
-
-problem.print_list()

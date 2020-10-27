@@ -1,4 +1,5 @@
 # test3.py: testa actions e goal_test
+# test3.py: testa actions e goal_test
 
 from ricochet_robots import *
 
@@ -7,17 +8,15 @@ board = parse_instance("instances/i1.txt")
 problem = RicochetRobots(board)
 s0 = RRState(board)
 
-'''
 # Aplicar as ações que resolvem a instância
-#print(('B', 'l') in problem.actions(s0))
+print(('B', 'l') in problem.actions(s0))
 s1 = problem.result(s0, ('B', 'l'))
-#print(('Y', 'u') in problem.actions(s1))
+print(('Y', 'u') in problem.actions(s1))
 s2 = problem.result(s1, ('Y', 'u'))
-#print(('R', 'r') in problem.actions(s2))
+print(('R', 'r') in problem.actions(s2))
 s3 = problem.result(s2, ('R', 'r'))
-#print(('R', 'u') in problem.actions(s3))
+print(('R', 'u') in problem.actions(s3))
 s4 = problem.result(s3, ('R', 'u'))
-
 
 # Verificar que o robô está no alvo só no último estado:
 print(problem.goal_test(s0))
@@ -26,7 +25,7 @@ print(problem.goal_test(s2))
 print(problem.goal_test(s3))
 print(problem.goal_test(s4))
 print(s4.board.robot_position('R'))
-'''
+
 # ---
 # Ler tabuleiro do ficheiro "i11.txt":
 board = parse_instance("instances/i11.txt")
@@ -34,8 +33,6 @@ problem = RicochetRobots(board)
 s0 = RRState(board)
 
 # Aplicar as ações que resolvem a instância
-print(problem.actions(s0))
-'''
 print(('Y', 'l') in problem.actions(s0))
 s1 = problem.result(s0, ('Y', 'l'))
 print(('R', 'l') in problem.actions(s1))
@@ -56,6 +53,8 @@ print(('B', 'r') in problem.actions(s8))
 s9 = problem.result(s8, ('B', 'r'))
 
 # Verificar que o robô está no alvo só no último estado:
+
+
 print(problem.goal_test(s1))
 print(problem.goal_test(s2))
 print(problem.goal_test(s3))
@@ -66,4 +65,3 @@ print(problem.goal_test(s7))
 print(problem.goal_test(s8))
 print(problem.goal_test(s9))
 print(s7.board.robot_position('B'))
-'''
