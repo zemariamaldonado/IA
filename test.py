@@ -28,7 +28,7 @@ def test2():
 
     # Mover o robô azul para a esquerda:
     result_state = problem.result(initial_state, ('B', 'l'))
-
+    
     # Imprimir a posição do robô azul:
     print(result_state.board.robot_position('B'))
 
