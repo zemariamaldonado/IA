@@ -7,7 +7,7 @@
 # 89489 Jose Lopes
 from search import Problem, Node, astar_search, breadth_first_tree_search, \
     depth_first_tree_search, greedy_search
-import sys
+import sys, math
 
 #TODO meter elifes nas funcoes onde eu quero que so se leia 1 if
 #TODO apagar prints em comentarios
@@ -519,17 +519,33 @@ class RicochetRobots(Problem):
     def h(self, node: Node):
         """ Função heuristica utilizada para a procura A*. """
         # TODO
-        
-        new_state = node.state
+        state = node.state
 
-        goal = new_state.board.target#devolve as coordenadas do target
+        size = int(state.board.size)
 
-        start_robot = self.initial.board.get_initial_robot(new_state.board.target)
+        goal = state.board.target
+        target = state.board.string_to_robot_coord(goal)
 
-        x1, y1 = int(start_robot[2]),int(start_robot[4])
-        x2, y2 = int(goal[2]),int(goal[4])
-        return abs(x2 - x1) + abs(y2 - y1) 
-      
+        start_robot = self.initial.board.get_initial_robot(state.board.target)
+        initialPos = state.board.string_to_robot_coord(start_robot)
+
+        color = state.board.get_robot_color(goal)
+        current = state.board.robot_position(color)
+
+        verticalDistance = abs(current[0] - target[0])
+        horizontalDistance = abs(current[1]- target[1])
+        h = (verticalDistance + horizontalDistance)
+
+        if node.parent != None:
+            currentPosDistanceX = current[0] - target[0]
+            currentPosDistanceY = current[1] - target[1]
+            initialPosDistanceX = initialPos[0] - target[0]
+            initialPosDistanceY = initialPos[1]- target[1]
+
+            crossProduct = abs(currentPosDistanceX * initialPosDistanceY - initialPosDistanceX * currentPosDistanceY)
+            h += crossProduct * 0.001
+
+        return h
 
 if __name__ == "__main__":
     
