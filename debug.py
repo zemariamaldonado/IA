@@ -433,3 +433,139 @@ if __name__ == "__main__":
 
 
 
+ #action_list  = self.actions(state)
+        y_pos = state.board.robot_position('Y')
+        g_pos = state.board.robot_position('G')
+        b_pos = state.board.robot_position('B')
+        r_pos = state.board.robot_position('R')
+
+        r1= state.board.r1
+        r2= state.board.r2
+        r3= state.board.r3
+        r4= state.board.r4
+
+        color1 = state.board.get_robot_color(r1)
+        color2 = state.board.get_robot_color(r2)
+        color3 = state.board.get_robot_color(r3)
+        color4 = state.board.get_robot_color(r4)
+
+        new_state = state
+        size = int( state.board.size)
+
+        #por cada estado é feito um ciclo que verifica a acao
+        #o movimento esta mal feito
+        for _ in range (0,size-1):   
+            if action[0] == 'Y':
+                y_pos = self.move_1_square(y_pos, action[1])
+                state_change_string = action[0] + ' ' + str(y_pos[0]) + ' ' + str(y_pos[1])
+
+                if color1 == 'Y':
+                    r1 = state_change_string
+                    board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+
+
+                elif color2 == 'Y':
+                    r2 = state_change_string
+                    board = Board(state.board.size, r1 ,r2, r3, r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+
+                elif color3 == 'Y':
+                    r3 = state_change_string
+                    board = Board(state.board.size, r1,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+
+                elif color4 == 'Y':
+                    r4 = state_change_string
+                    board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+
+            if action[0] == 'B':
+                b_pos = self.move_1_square(b_pos, action[1])
+                state_change_string = action[0] + ' ' + str(b_pos[0]) + ' ' + str(b_pos[1])
+                r_positions = 2
+                if color1 == 'B':
+                    r1 = state_change_string
+                    board = Board(state.board.size, r1 ,state.board.r2, state.board.r3 ,state.board.r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+
+                elif color2 == 'B':
+                    r2 = state_change_string
+                    board = Board(state.board.size, state.board.r1 ,r2, state.board.r3 ,state.board.r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+
+                elif color3 == 'B':
+                    r3 = state_change_string
+                    board = Board(state.board.size, state.board.r1,state.board.r2, r3 ,state.board.r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+
+                elif color4 == 'B':
+                    r4 = state_change_string
+                    board = Board(state.board.size, state.board.r1 ,state.board.r2, state.board.r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+
+            if action[0] == 'G':
+                g_pos = self.move_1_square(g_pos, action[1])
+                state_change_string = action[0] + ' ' + str(g_pos[0]) + ' ' + str(g_pos[1])
+
+                if color1 == 'G':
+                    r1 = state_change_string
+                    board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+
+                elif color2 == 'G':
+                    r2 = state_change_string
+                    board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+
+                elif color3 == 'G':
+                    r3 = state_change_string
+                    board = Board(state.board.size,r1,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+
+                elif color4 == 'G':
+                    r4 = state_change_string
+                    board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+
+            if action[0] == 'R':
+                r_pos = self.move_1_square(r_pos, action[1])
+                state_change_string = action[0] + ' ' + str(r_pos[0]) + ' ' + str(r_pos[1])
+
+                if color1 == 'R':
+                    r1 = state_change_string
+                    board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+
+                elif color2 == 'R':
+                    r2 = state_change_string
+                    board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+
+                elif color3 == 'R':
+                    r3 = state_change_string
+                    board = Board(state.board.size, r1,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+
+                elif color4 == 'R':
+                    r4 = state_change_string
+                    board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
+                    new_state = RRState(board)
+                    self.actions(new_state)
+      
+        return new_state
