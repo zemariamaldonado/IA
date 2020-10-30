@@ -59,15 +59,37 @@ class Board:
         return color
     
     def string_to_robot_coord(self, string: str):
-        #print(">>>>>>",string)
-        x = int(string[2])
-        y = int(string[4])
+        if len(string) == 5:
+            x = int(string[2])
+            y = int(string[4])
+        elif len(string) == 6:
+            if string[3] != ' ':
+                x = int(string[2] + string[3])
+                y = int(string[5])
+            else:
+                x = int(string[2])
+                y = int(string[4] + string[5])
+        elif len(string) == 7:
+            x = int(string[2] + string[3])
+            y = int(string[5] + string[6])
+
         tup = (x, y)
         return tup
     
     def string_to_wall_coord(self, string: str):
-        x = int(string[0])
-        y = int(string[2])
+        if len(string) == 5:
+            x = int(string[0])
+            y = int(string[2])
+        elif len(string) == 6:
+            if string[1] != ' ':
+                x = int(string[0] + string[1])
+                y = int(string[3])
+            else:
+                x = int(string[0])
+                y = int(string[2] + string[3])
+        elif len(string) == 7:
+            x = int(string[0] + string[1])
+            y = int(string[3] + string[4])
         tup = (x, y)
         return tup
     
@@ -152,25 +174,6 @@ class RicochetRobots(Problem):
         """ O construtor especifica o estado inicial. """
         self.initial = RRState(board)
         self.stepList = []
-    
-    """def boundary_collision(self,pos, size, a_array, color):
-        left = (color, 'l')
-        right = (color, 'r')
-        up = (color, 'u')
-        down = (color, 'd')
-        if pos[0] == 1:
-            if up in a_array:
-                a_array.remove((color, 'u'))
-        elif pos[0] == size:
-            if down in a_array:
-                a_array.remove((color, 'd'))
-        
-        if pos[1] == 1:
-            if left in a_array:
-                a_array.remove((color, 'l'))
-        elif pos[1] == size:
-            if right in a_array:
-                a_array.remove((color, 'r'))"""
 
     def boundary_collision(self, pos, size, a_array, color):
         left = (color, 'l')
@@ -403,87 +406,7 @@ class RicochetRobots(Problem):
                 self.stepList[i] = steps
 
             i += 1
-
-    def wall_collision(self, wall_pos_lst, pos, walls, color, a_array):
-        d = ' '
-        left = (color, 'l')
-        right = (color, 'r')
-        up = (color, 'u')
-        down = (color, 'd')
-        for i in range(len(wall_pos_lst)):
-            if wall_pos_lst[i] == pos:
-                d = self.initial.board.get_wall_direction(walls[i])
-                
-                if d == 'l':
-                    if left in a_array:
-                        a_array.remove(left)
-                elif d == 'r':
-                    if right in a_array:
-                        a_array.remove(right)
-                elif d == 'u':
-                    if up in a_array:
-                        a_array.remove(up)
-                elif d == 'd':
-                    if down in a_array:
-                        a_array.remove(down)
-        
-        for j in range(len(wall_pos_lst)):
-            if wall_pos_lst[j] == self.move_1_square(pos,'r'):
-                if self.initial.board.get_wall_direction(walls[j]) == 'l':
-                    if right in a_array:
-                        a_array.remove(right)
-            if wall_pos_lst[j] == self.move_1_square(pos,'l'):
-                if self.initial.board.get_wall_direction(walls[j]) == 'r':
-                    if left in a_array:
-                        a_array.remove(left)
-            if wall_pos_lst[j] == self.move_1_square(pos,'u'):
-                if self.initial.board.get_wall_direction(walls[j]) == 'd':
-                    if up in a_array:
-                        a_array.remove(up)
-            if wall_pos_lst[j] == self.move_1_square(pos,'d'):
-                if self.initial.board.get_wall_direction(walls[j]) == 'u':
-                    if down in a_array:
-                        a_array.remove(down) 
-        
-
-    def robot_collisions(self, robot_pos_lst, pos, color, a_array):
-        left = (color, 'l')
-        right = (color, 'r')
-        up = (color, 'u')
-        down = (color, 'd')
-
-        for i in range(len(robot_pos_lst)):
-            if robot_pos_lst[i] == self.move_1_square(pos,'l'):
-                if left in a_array:
-                    a_array.remove(left)
-            if robot_pos_lst[i] == self.move_1_square(pos,'r'):
-                if right in a_array:
-                    a_array.remove(right)
-            if robot_pos_lst[i] == self.move_1_square(pos,'u'):
-                if up in a_array:
-                    a_array.remove(up)
-            if robot_pos_lst[i] == self.move_1_square(pos,'d'):
-                if down in a_array:    
-                    a_array.remove(down)
-
-    def move_1_square(self, pos, direction):
-        new_move = ( )
-        l = list(pos)
-        if direction == 'l':
-            l[1] = l[1]-1
-            new_move = tuple(l)
-        elif direction == 'r':
-            l[1] = l[1]+1
-            new_move = tuple(l)
-        elif direction == 'u':
-            l[0] = l[0]-1
-            new_move = tuple(l)
-        elif direction == 'd':
-            l[0] = l[0]+1 
-            new_move = tuple(l)
-    
-        return new_move
-     
+         
     def moveRobot(self, state: RRState, action, actions):
         color = action[0]
         d = action[1]
@@ -552,33 +475,6 @@ class RicochetRobots(Problem):
         self.boundary_collision(r_pos, size, actions, 'R')
 
         self.checkSteps(state, wall_pos_lst, walls, size, robot_pos_lst, actions)
-
-        """
-        #-------yellow robot----------
-        
-        self.wall_collision(wall_pos_lst, y_pos, walls, 'Y', actions)
-        self.robot_collisions(robot_pos_lst, y_pos, 'Y', actions)
-        self.boundary_collision(y_pos, size, actions, 'Y')
-
-         #-------green robot----------
-        
-        self.wall_collision(wall_pos_lst, g_pos, walls, 'G', actions)
-        self.robot_collisions(robot_pos_lst, g_pos, 'G', actions)
-        self.boundary_collision(g_pos, size, actions, 'G')
-
-        #-------blue robot---------
-        
-        self.wall_collision(wall_pos_lst, b_pos, walls, 'B', actions)
-        self.robot_collisions(robot_pos_lst, b_pos, 'B', actions)
-        self.boundary_collision(b_pos, size, actions, 'B')
-
-        #-------red robot----------
-       
-        self.wall_collision(wall_pos_lst, r_pos, walls, 'R', actions)
-        self.robot_collisions(robot_pos_lst, r_pos, 'R', actions)
-        self.boundary_collision(r_pos, size, actions, 'R')
-        """
-
         
         return actions
           
@@ -590,125 +486,6 @@ class RicochetRobots(Problem):
         self.actions(state). """
         
         action_list  = self.actions(state)
-        """
-        y_pos = state.board.robot_position('Y')
-        g_pos = state.board.robot_position('G')
-        b_pos = state.board.robot_position('B')
-        r_pos = state.board.robot_position('R')
-
-        r1= state.board.r1
-        r2= state.board.r2
-        r3= state.board.r3
-        r4= state.board.r4
-
-        color1 = state.board.get_robot_color(r1)
-        color2 = state.board.get_robot_color(r2)
-        color3 = state.board.get_robot_color(r3)
-        color4 = state.board.get_robot_color(r4)
-
-        new_state = state
-        
-        size = int(state.board.size)
-        """
-        
-        #while action in self.actions(new_state):
-        #no move 1_square fazer as verificacoes
-          
-        """
-        if action[0] == 'Y':
-            y_pos = self.move_1_square(y_pos, action[1])
-            state_change_string = action[0] + ' ' + str(y_pos[0]) + ' ' + str(y_pos[1])
-            if color1 == 'Y':
-                r1 = state_change_string
-                board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-            elif color2 == 'Y':
-                r2 = state_change_string
-                board = Board(state.board.size, r1 ,r2, r3, r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-            elif color3 == 'Y':
-                r3 = state_change_string
-                board = Board(state.board.size, r1,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-            elif color4 == 'Y':
-                r4 = state_change_string
-                board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-        if action[0] == 'B':
-            b_pos = self.move_1_square(b_pos, action[1])
-            state_change_string = action[0] + ' ' + str(b_pos[0]) + ' ' + str(b_pos[1])
-            if color1 == 'B':
-                r1 = state_change_string
-                board = Board(state.board.size, r1 ,state.board.r2, state.board.r3 ,state.board.r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-            elif color2 == 'B':
-                r2 = state_change_string
-                board = Board(state.board.size, state.board.r1 ,r2, state.board.r3 ,state.board.r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-            elif color3 == 'B':
-                r3 = state_change_string
-                board = Board(state.board.size, state.board.r1,state.board.r2, r3 ,state.board.r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-            elif color4 == 'B':
-                r4 = state_change_string
-                board = Board(state.board.size, state.board.r1 ,state.board.r2, state.board.r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-        if action[0] == 'G':
-            g_pos = self.move_1_square(g_pos, action[1])
-            state_change_string = action[0] + ' ' + str(g_pos[0]) + ' ' + str(g_pos[1])
-            if color1 == 'G':
-                r1 = state_change_string
-                board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-            elif color2 == 'G':
-                r2 = state_change_string
-                board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-            elif color3 == 'G':
-                r3 = state_change_string
-                board = Board(state.board.size,r1,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-            elif color4 == 'G':
-                r4 = state_change_string
-                board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-        if action[0] == 'R':
-            r_pos = self.move_1_square(r_pos, action[1])
-            state_change_string = action[0] + ' ' + str(r_pos[0]) + ' ' + str(r_pos[1])
-            if color1 == 'R':
-                r1 = state_change_string
-                board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-            elif color2 == 'R':
-                r2 = state_change_string
-                board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-            elif color3 == 'R':
-                r3 = state_change_string
-                board = Board(state.board.size, r1,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-            elif color4 == 'R':
-                r4 = state_change_string
-                board = Board(state.board.size, r1 ,r2, r3 ,r4, state.board.target, state.board.wall_num, state.board.walls )
-                new_state = RRState(board)
-                #self.actions(new_state)
-
-        """
 
         new_state = self.moveRobot(state, action, action_list)
 
