@@ -54,7 +54,7 @@ def test3():
 
 def test4():
     # Ler tabuleiro do ficheiro "i1.txt":
-    board = parse_instance("instances/i11.txt")
+    board = parse_instance("i1.txt")
 
     # Criar uma instância de RicochetRobots:
     problem = RicochetRobots(board)

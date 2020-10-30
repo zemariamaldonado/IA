@@ -742,7 +742,7 @@ class RicochetRobots(Problem):
     def h(self, node: Node):
         """ Função heuristica utilizada para a procura A*. """
         # TODO
-        #print(type(node))
+        
         new_state = node.state
 
         goal = new_state.board.target#devolve as coordenadas do target
